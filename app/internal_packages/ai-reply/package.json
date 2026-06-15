@@ -1,0 +1,17 @@
+{
+  "name": "ai-reply",
+  "version": "0.1.0",
+  "main": "./lib/main",
+  "isOptional": true,
+  "title": "AI Reply",
+  "description": "Generate email replies using AI APIs.",
+  "license": "GPL-3.0",
+  "engines": {
+    "mailspring": "*"
+  },
+  "windowTypes": {
+    "default": true,
+    "composer": true,
+    "thread-popout": true
+  }
+}

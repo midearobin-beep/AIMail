@@ -205,7 +205,7 @@ function buildPackagerOptions() {
     appVersion: packageJSON.version,
     platform,
     protocols: [
-      { name: 'Mailspring Protocol', schemes: ['mailspring'] },
+      { name: 'AIMail Protocol', schemes: ['mailspring'] },
       { name: 'Mailto Protocol', schemes: ['mailto'] },
     ],
     dir: appDir,
@@ -221,15 +221,17 @@ function buildPackagerOptions() {
       win32: path.resolve(appDir, 'build', 'resources', 'win', 'mailspring-square.ico'),
       linux: undefined,
     }[platform],
-    name: { darwin: 'Mailspring', win32: 'Mailspring', linux: 'mailspring' }[platform],
-    appCopyright: `Copyright (C) 2014-${new Date().getFullYear()} Foundry 376, LLC. All rights reserved.`,
+    name: { darwin: 'AIMail', win32: 'AIMail', linux: 'aimail' }[platform],
+    appCopyright: `Copyright (C) 2014-${new Date().getFullYear()} AIMail Contributors. All rights reserved.`,
     derefSymlinks: false,
     asar: {
       unpack:
         '{' +
         [
           'mailsync',
+          'mailspring-sync',
           'mailsync.exe',
+          'mailspring-sync.exe',
           'mailsync.bin',
           '*.so',
           '*.so.*',
@@ -323,17 +325,17 @@ function buildPackagerOptions() {
         }
       : undefined,
     win32metadata: {
-      CompanyName: 'Foundry 376, LLC',
-      FileDescription: 'Mailspring',
-      LegalCopyright: `Copyright (C) 2014-${new Date().getFullYear()} Foundry 376, LLC. All rights reserved.`,
-      ProductName: 'Mailspring',
+      CompanyName: 'AIMail Contributors',
+      FileDescription: 'AIMail',
+      LegalCopyright: `Copyright (C) 2014-${new Date().getFullYear()} AIMail Contributors. All rights reserved.`,
+      ProductName: 'AIMail',
     },
     // NOTE: The following plist keys can NOT be set in the extra.plist since
     // they are manually overridden by electron-packager based on this config:
     //   CFBundleDisplayName, CFBundleExecutable, CFBundleIdentifier, CFBundleName
     // See https://github.com/electron-userland/electron-packager/blob/master/mac.js#L50
     extendInfo: path.resolve(appDir, 'build', 'resources', 'mac', 'extra.plist'),
-    appBundleId: 'com.mailspring.mailspring',
+    appBundleId: 'com.aimail.desktop',
     afterCopy: [
       runCopyPlatformSpecificResources,
       runWriteCommitHashIntoPackage,
@@ -367,15 +369,15 @@ async function runPackager() {
 }
 
 async function createMacZip() {
-  const zipPath = path.join(outputDir, 'Mailspring.zip');
+  const zipPath = path.join(outputDir, `${packageJSON.productName}.zip`);
   if (fs.existsSync(zipPath)) {
     fs.unlinkSync(zipPath);
   }
   const arch = process.env.OVERRIDE_TO_INTEL ? 'x64' : process.arch;
-  const cwd = path.join(outputDir, `Mailspring-darwin-${arch}`);
+  const cwd = path.join(outputDir, `${packageJSON.productName}-darwin-${arch}`);
   await spawn({
     cmd: 'zip',
-    args: ['-9', '-y', '-r', '-9', '-X', zipPath, 'Mailspring.app'],
+    args: ['-9', '-y', '-r', '-9', '-X', zipPath, `${packageJSON.productName}.app`],
     opts: { cwd },
   });
   console.log(`>> Created ${zipPath}`);
@@ -393,7 +395,7 @@ const linuxArch = { ia32: 'i386', x64: 'amd64', arm64: 'arm64' }[process.arch];
 async function createDebInstaller() {
   if (!linuxArch) throw new Error(`Unsupported arch ${process.arch}`);
 
-  const contentsDir = path.join(outputDir, `mailspring-linux-${process.arch}`);
+  const contentsDir = path.join(outputDir, `${packageJSON.name}-linux-${process.arch}`);
   const linuxAssetsDir = path.resolve(path.join(buildDir, 'resources', 'linux'));
 
   // `du` failures (e.g. permission errors) are non-fatal — fall back to a
@@ -411,10 +413,10 @@ async function createDebInstaller() {
     name: packageJSON.name,
     description: packageJSON.description,
     productName: packageJSON.productName,
-    linuxShareDir: '/usr/share/mailspring',
+    linuxShareDir: `/usr/share/${packageJSON.name}`,
     arch: linuxArch,
     section: 'mail',
-    maintainer: 'Mailspring Team <support@getmailspring.com>',
+    maintainer: 'AIMail Contributors',
     installedSize,
   };
   writeFromTemplate(path.join(linuxAssetsDir, 'debian', 'control.in'), data);
@@ -426,13 +428,13 @@ async function createDebInstaller() {
     cmd: path.join(appDir, 'script', 'mkdeb'),
     args: [packageJSON.version, linuxArch, icon, linuxAssetsDir, contentsDir, outputDir],
   });
-  console.log(`Created ${outputDir}/mailspring-${packageJSON.version}-${linuxArch}.deb`);
+  console.log(`Created ${outputDir}/${packageJSON.name}-${packageJSON.version}-${linuxArch}.deb`);
 }
 
 async function createRpmInstaller() {
   if (!linuxArch) throw new Error(`Unsupported arch ${process.arch}`);
 
-  const contentsDir = path.join(outputDir, `mailspring-linux-${process.arch}`);
+  const contentsDir = path.join(outputDir, `${packageJSON.name}-linux-${process.arch}`);
   const linuxAssetsDir = path.resolve(path.join(buildDir, 'resources', 'linux'));
   const rpmDir = path.join(outputDir, 'rpm');
   if (fs.existsSync(rpmDir)) {
@@ -444,7 +446,7 @@ async function createRpmInstaller() {
     version: packageJSON.version,
     description: packageJSON.description,
     productName: packageJSON.productName,
-    linuxShareDir: '/usr/local/share/mailspring',
+    linuxShareDir: `/usr/local/share/${packageJSON.name}`,
     linuxAssetsDir,
     contentsDir,
   };

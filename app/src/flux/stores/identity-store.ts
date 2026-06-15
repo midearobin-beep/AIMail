@@ -29,6 +29,8 @@ export interface IIdentity {
       period: 'weekly' | 'monthly';
     };
   };
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export type IdentityAuthResponse = IIdentity | { skipped: true };
@@ -41,7 +43,18 @@ export const EMPTY_FEATURE_USAGE = {
 };
 
 class _IdentityStore extends MailspringStore {
-  _identity: IIdentity = null;
+  _identity: IIdentity = {
+    id: 'aimail-local-user',
+    token: 'aimail-local-token',
+    firstName: 'AIMail',
+    lastName: 'User',
+    emailAddress: 'local@aimail.local',
+    stripePlan: 'pro',
+    stripePlanEffective: 'pro',
+    featureUsage: {},
+    createdAt: '2026-06-15T00:00:00Z',
+    updatedAt: '2026-06-15T00:00:00Z',
+  };
   _displayedPasswordError = false;
   _disp: Disposable;
 
@@ -49,10 +62,6 @@ class _IdentityStore extends MailspringStore {
     super();
 
     if (AppEnv.isEmptyWindow()) {
-      /*
-      Hot windows don't receive any action-bridge-messages, which include DB updates.
-      Since the hot window loads first, it may have a stale verison of the Identity.
-      */
       AppEnv.onWindowPropsReceived(() => {
         this._onIdentityChanged();
       });
@@ -63,7 +72,6 @@ class _IdentityStore extends MailspringStore {
     this._onIdentityChanged();
 
     this.listenTo(Actions.logoutMailspringIdentity, this._onLogoutMailspringIdentity);
-    this._fetchAndPollRemoteIdentity();
   }
 
   deactivate() {
@@ -72,62 +80,30 @@ class _IdentityStore extends MailspringStore {
   }
 
   identity() {
-    if (!this._identity || !this._identity.id) return null;
     return Utils.deepClone(this._identity);
   }
 
   identityId() {
-    if (!this._identity) {
-      return null;
-    }
-    return this._identity.id;
+    return 'aimail-local-user';
   }
 
   hasProFeatures() {
-    return this._identity && this._identity.stripePlanEffective !== 'Basic';
+    return true;
   }
 
   _fetchAndPollRemoteIdentity() {
-    if (!AppEnv.isMainWindow()) return;
-    setTimeout(() => {
-      this.fetchIdentity();
-    }, 1000);
-    setInterval(
-      () => {
-        this.fetchIdentity();
-      },
-      1000 * 60 * 10
-    ); // 10 minutes
+    // No-op for local-only AIMail
   }
 
   async saveIdentity(identity: IIdentity | null) {
     if (!identity) {
       this._identity = null;
-      await KeyManager.deletePassword(PASSWORD_NAME);
       AppEnv.config.set('identity', null);
       return;
     }
 
-    const { token, ...rest } = identity;
-
-    // allow someone to call saveIdentity without the token,
-    // and only save it if it's been changed (expensive call.)
-    const oldToken = this._identity ? this._identity.token : null;
-    const nextToken = token || oldToken;
-
-    if (nextToken && nextToken !== oldToken) {
-      // Note: We /must/ await this because calling config.set below
-      // will try to retrieve the password via getPassword.
-      // If this fails, the app may quit here.
-      await KeyManager.replacePassword(PASSWORD_NAME, nextToken);
-    }
-
     this._identity = identity;
-    this._identity.token = nextToken;
-    AppEnv.config.set('identity', rest);
-
-    // Setting AppEnv.config will trigger our onDidChange handler,
-    // no need to trigger here.
+    AppEnv.config.set('identity', identity);
   }
 
   /**
@@ -135,22 +111,7 @@ class _IdentityStore extends MailspringStore {
    * cache and set the token from the keychain.
    */
   _onIdentityChanged = async () => {
-    const value = AppEnv.config.get('identity');
-    this._identity = value
-      ? { ...value, token: await KeyManager.getPassword(PASSWORD_NAME) }
-      : null;
-
-    if (this._identity && !this._identity.token) {
-      const message = `Your Mailspring ID password could not be loaded from your keychain. Please visit Preferences > Subscription and click "Setup Mailspring ID" to sign in to your Mailspring account again.\n\nYour Mailspring ID email address is ${this._identity.emailAddress}.`;
-      console.warn(message);
-
-      if (!this._displayedPasswordError) {
-        this._displayedPasswordError = true;
-        AppEnv.showErrorDialog({ title: 'Please Sign In', message });
-      }
-      this._identity = null;
-    }
-
+    // Keep using the mock identity locally without querying keychain
     this.trigger();
   };
 
@@ -174,77 +135,12 @@ class _IdentityStore extends MailspringStore {
     path: string,
     { source, campaign, content }: { source?: string; campaign?: string; content?: string } = {}
   ) {
-    if (!this._identity) {
-      return Promise.reject(new Error('fetchSingleSignOnURL: no identity set.'));
-    }
-
-    const qs: any = { utm_medium: 'N1' };
-    if (source) {
-      qs.utm_source = source;
-    }
-    if (campaign) {
-      qs.utm_campaign = campaign;
-    }
-    if (content) {
-      qs.utm_content = content;
-    }
-
-    const pathWithUtm = url.parse(path, true);
-    pathWithUtm.query = Object.assign({}, qs, pathWithUtm.query || {});
-
-    const pathWithUtmString = url.format({
-      pathname: pathWithUtm.pathname,
-      query: pathWithUtm.query,
-    });
-
-    if (!pathWithUtmString.startsWith('/')) {
-      throw new Error('fetchSingleSignOnURL: path must start with a leading slash.');
-    }
-
-    const body = new FormData();
-    for (const key of Object.keys(qs)) {
-      body.append(key, qs[key]);
-    }
-    body.append('next_path', pathWithUtmString);
-
-    try {
-      const json = await makeRequest({
-        server: 'identity',
-        path: `/api/login-link?${querystring.stringify(qs)}`,
-        body: body,
-        timeout: 1500,
-        method: 'POST',
-      });
-      return `${rootURLForServer('identity')}${json.path}`;
-    } catch (err) {
-      return `${rootURLForServer('identity')}${path}`;
-    }
+    return Promise.reject(new Error('Single Sign On is disabled in offline mode.'));
   }
 
   fetchIdentitySoon = debounce(() => this.fetchIdentity(), 5000, true);
 
   async fetchIdentity() {
-    if (!this._identity || !this._identity.token) {
-      return null;
-    }
-
-    const json = await makeRequest({
-      server: 'identity',
-      path: '/api/me',
-      method: 'GET',
-    });
-
-    if (!json || !json.id) {
-      AppEnv.reportError(new Error('/api/me returned invalid json'), json || {});
-      return this._identity;
-    }
-
-    if (json.id !== this._identity.id) {
-      console.log('Note: server returned a different identity object.');
-    }
-
-    const nextIdentity = Object.assign({}, this._identity, json);
-    await this.saveIdentity(nextIdentity);
     return this._identity;
   }
 }

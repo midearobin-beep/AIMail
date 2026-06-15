@@ -187,7 +187,7 @@ exports.existsSync = () => fs.existsSync(updateDotExe);
 // Registry path: HKEY_CURRENT_USER\SOFTWARE\Classes\AppUserModelId\{AUMID}
 function registerAppUserModelId(callback) {
   const aumid = 'com.squirrel.mailspring.mailspring';
-  const displayName = 'Mailspring';
+  const displayName = 'AIMail';
   const iconPath = path.join(appFolder, 'resources', 'mailspring-square.ico');
 
   let regPath = 'reg.exe';
@@ -335,7 +335,7 @@ exports.handleSquirrelInstall = app => {
     '/t',
     'REG_SZ',
     '/d',
-    'Mailspring',
+    'AIMail',
     '/f',
   ]);
   if (fs.existsSync(iconPath)) {

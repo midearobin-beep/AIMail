@@ -1,0 +1,56 @@
+.btn-ai-reply {
+  display: flex;
+  align-items: center;
+  color: @text-color-link;
+
+  img {
+    background-color: @text-color-link;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+.preferences-ai-reply {
+  .section-title {
+    font-size: @font-size-large;
+    font-weight: @font-weight-semi-bold;
+    margin-bottom: 15px;
+  }
+
+  .item {
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: @font-weight-semi-bold;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    select,
+    textarea {
+      padding: 6px 8px;
+      border: 1px solid @input-border-color;
+      border-radius: 3px;
+      background: @background-primary;
+      color: @text-color;
+      font-size: @font-size-base;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  }
+
+  .note {
+    font-size: @font-size-small;
+    color: @text-color-very-subtle;
+    margin-top: 5px;
+  }
+}

@@ -136,11 +136,8 @@ body.is-blurred {
     }
   }
   .sheet-toolbar-container {
-    background-image: linear-gradient(
-      to bottom,
-      lighten(@toolbar-background-color, 14%),
-      lighten(@toolbar-background-color, 14%)
-    );
+    background-color: lighten(@toolbar-background-color, 14%);
+    background-image: none;
 
     .btn.btn-toolbar {
       background: none;
@@ -159,19 +156,15 @@ body.is-blurred {
 }
 
 .sheet-toolbar-container {
-  background-image: -webkit-linear-gradient(
-    lighten(@toolbar-background-color, 10%) 0%,
-    lighten(@toolbar-background-color, 10%) 1.9%,
-    lighten(@toolbar-background-color, 9%) 2%,
-    @toolbar-background-color 100%
-  );
+  background-color: @toolbar-background-color;
+  background-image: none;
   color: @text-color-heading;
 }
 
 .sheet-toolbar {
   position: relative;
   -webkit-app-region: drag;
-  border-bottom: 1px solid darken(@toolbar-background-color, 9%);
+  border-bottom: 1px solid darken(@toolbar-background-color, 3%);
   width: 100%;
   height: 34px;
 
@@ -203,6 +196,8 @@ body.is-blurred {
       transform: translateX(-50%);
       -webkit-app-region: drag;
       line-height: 34px;
+      font-weight: 500;
+      font-size: 12.5px;
       &:hover {
         cursor: default;
       }

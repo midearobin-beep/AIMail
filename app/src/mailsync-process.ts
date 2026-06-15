@@ -100,7 +100,9 @@ export class MailsyncProcess extends EventEmitter {
     this.verbose = verbose;
     this.resourcePath = resourcePath;
     this.configDirPath = configDirPath;
-    this.binaryPath = path.join(resourcePath, 'mailsync').replace('app.asar', 'app.asar.unpacked');
+    this.binaryPath = path
+      .join(resourcePath, 'mailspring-sync')
+      .replace('app.asar', 'app.asar.unpacked');
   }
 
   _showStatusWindow(mode) {
@@ -156,12 +158,8 @@ export class MailsyncProcess extends EventEmitter {
       CONFIG_DIR_PATH: this.configDirPath,
       GMAIL_CLIENT_ID: GMAIL_CLIENT_ID,
       GMAIL_CLIENT_SECRET: GMAIL_CLIENT_SECRET,
-      IDENTITY_SERVER: 'unknown',
+      IDENTITY_SERVER: 'http://127.0.0.1:9999',
     };
-    if (process.type === 'renderer') {
-      const rootURLForServer = require('./flux/mailspring-api-request').rootURLForServer;
-      env.IDENTITY_SERVER = rootURLForServer('identity');
-    }
 
     const args = [`--mode`, mode];
     if (this.verbose) {

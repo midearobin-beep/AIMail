@@ -373,6 +373,38 @@ export default {
           },
         },
       },
+      aiReply: {
+        type: 'object',
+        properties: {
+          enabled: {
+            type: 'boolean',
+            default: false,
+            title: localized('Enable AI Reply'),
+          },
+          provider: {
+            type: 'string',
+            default: 'openai',
+            enum: ['openai', 'custom'],
+            enumLabels: ['OpenAI', 'Custom (OpenAI-compatible)'],
+            title: localized('AI Provider'),
+          },
+          model: {
+            type: 'string',
+            default: 'gpt-4o-mini',
+            title: localized('Model'),
+          },
+          customEndpoint: {
+            type: 'string',
+            default: '',
+            title: localized('Custom API Endpoint'),
+          },
+          customPrompt: {
+            type: 'string',
+            default: '',
+            title: localized('Custom System Prompt'),
+          },
+        },
+      },
     },
   },
 };

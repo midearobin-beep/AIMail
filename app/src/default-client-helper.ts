@@ -3,7 +3,7 @@ import { exec } from 'child_process';
 import { shell } from 'electron';
 import { localized } from './intl';
 
-const bundleIdentifier = 'com.mailspring.mailspring';
+const bundleIdentifier = 'com.aimail.desktop';
 
 interface DCH {
   available(): boolean;

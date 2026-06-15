@@ -87,6 +87,8 @@ function downloadMailsync() {
             err => {
               if (!err) {
                 console.log(`\nUnpackaged Mailsync into ./app.`);
+                if (fs.existsSync('app/mailsync')) fs.renameSync('app/mailsync', 'app/mailspring-sync');
+                if (fs.existsSync('app/mailsync.exe')) fs.renameSync('app/mailsync.exe', 'app/mailspring-sync.exe');
               } else {
                 console.error(`\nEncountered an error unpacking: ${err}`);
               }
