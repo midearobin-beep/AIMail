@@ -51,6 +51,7 @@ jobs:
 
       - name: Sign Application Files with Azure Trusted Signing
         uses: azure/trusted-signing-action@v0
+        continue-on-error: true
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -70,6 +71,7 @@ jobs:
 
       - name: Sign Windows Installer with Azure Trusted Signing
         uses: azure/trusted-signing-action@v0
+        continue-on-error: true
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -85,6 +87,7 @@ jobs:
           timestamp-digest: SHA256
 
       - name: Sync Artifacts to S3
+        continue-on-error: true
         shell: pwsh
         run: |
           $commit = git rev-parse --short=8 HEAD
@@ -94,3 +97,12 @@ jobs:
             --include "MailspringSetup.exe" `
             --include "*.nupkg" `
             --include "RELEASES"
+
+      - name: Upload Windows Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: aimail-windows-installer
+          path: |
+            app/dist/MailspringSetup.exe
+            app/dist/RELEASES
+            app/dist/*.nupkg
