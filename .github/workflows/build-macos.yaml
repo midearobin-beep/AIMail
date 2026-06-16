@@ -16,10 +16,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Fail if branch is not main
-        if: github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/master'
+      - name: Fail if branch is not main or aimail-main
+        if: github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/master' && github.ref != 'refs/heads/aimail-main'
         run: |
-          echo "This workflow should not be triggered with workflow_dispatch on a branch other than main"
+          echo "This workflow should not be triggered with workflow_dispatch on a branch other than main or aimail-main"
           exit 1
 
       - name: Checkout Repo
