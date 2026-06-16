@@ -116,27 +116,29 @@ export default class SignaturePhotoPicker extends React.Component<
   _onChooseImageBlob = async (blob: Blob, width: number, height: number) => {
     this.setState({ isUploading: true });
 
-    const ext = { 'image/jpg': 'jpg', 'image/png': 'png' }[blob.type];
-    const filename = `sig-${this.props.id}.${ext}`;
-    let link = null;
-
     try {
-      link = await MailspringAPIRequest.postStaticAsset({ filename, blob });
-    } catch (err) {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+
+      if (!this._isMounted) return;
+      this.setState({ isUploading: false });
+
+      this.props.onChange({
+        target: { value: `${dataUrl}?msw=${width}&msh=${height}`, id: 'photoURL' },
+      });
+    } catch (err: any) {
       AppEnv.showErrorDialog(
         localized(
-          `Sorry, we couldn't save your signature image to Mailspring's servers. Please try again.\n\n(%@)`,
+          `Sorry, we couldn't load your signature image. Please try again.\n\n(%@)`,
           err.toString()
         )
       );
-      return;
+      this.setState({ isUploading: false });
     }
-    if (!this._isMounted) return;
-    this.setState({ isUploading: false });
-
-    this.props.onChange({
-      target: { value: `${link}?t=${Date.now()}&msw=${width}&msh=${height}`, id: 'photoURL' },
-    });
   };
 
   render() {

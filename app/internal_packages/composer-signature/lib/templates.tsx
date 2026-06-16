@@ -160,15 +160,6 @@ function GenericInfoBlock(props, prefixStyle: any = PrefixStyles.None) {
         </div>
       )}
       <div>
-        {props.facebookURL && (
-          <a
-            href={props.facebookURL}
-            title="Facebook"
-            style={{ marginRight: 8, color: props.tintColor }}
-          >
-            {FB_SHARE}
-          </a>
-        )}
         {props.linkedinURL && (
           <a
             href={props.linkedinURL}
@@ -185,42 +176,6 @@ function GenericInfoBlock(props, prefixStyle: any = PrefixStyles.None) {
             style={{ marginRight: 8, color: props.tintColor }}
           >
             {MEDIUM_SHARE}
-          </a>
-        )}
-        {props.githubURL && (
-          <a
-            href={props.githubURL}
-            title="GitHub"
-            style={{ marginRight: 8, color: props.tintColor }}
-          >
-            {GITHUB_SHARE}
-          </a>
-        )}
-        {props.youtubeURL && (
-          <a
-            href={props.youtubeURL}
-            title="YouTube"
-            style={{ marginRight: 8, color: props.tintColor }}
-          >
-            {YOUTUBE_SHARE}
-          </a>
-        )}
-        {props.twitterHandle && (
-          <a
-            href={`https://twitter.com/${props.twitterHandle}`}
-            title="Twitter"
-            style={{ marginRight: 8, color: props.tintColor }}
-          >
-            {TWITTER_SHARE}
-          </a>
-        )}
-        {props.instagramURL && (
-          <a
-            href={props.instagramURL}
-            title="Instagram"
-            style={{ marginRight: 8, color: props.tintColor }}
-          >
-            {INSTAGRAM_SHARE}
           </a>
         )}
       </div>
@@ -249,8 +204,16 @@ const Templates = [
               )}
             </td>
             <td>
-              {props.name && <div>{props.name}</div>}
-              {props.title && <div>{props.title}</div>}
+              {props.name && (
+                <div>
+                  <strong>{props.name}</strong>
+                  {props.title && (
+                    <span style={{ color: props.tintColor || 'gray', paddingLeft: 10 }}>
+                      {props.title}
+                    </span>
+                  )}
+                </div>
+              )}
               <div
                 style={{
                   fontSize: '0.9em',
@@ -281,9 +244,13 @@ const Templates = [
                   {props.name && (
                     <div>
                       <strong>{props.name}</strong>
+                      {props.title && (
+                        <span style={{ color: props.tintColor || 'gray', paddingLeft: 10 }}>
+                          {props.title}
+                        </span>
+                      )}
                     </div>
                   )}
-                  {props.title && <div>{props.title}</div>}
                 </div>
               </td>
             </tr>
@@ -374,17 +341,11 @@ const Templates = [
               {props.name && (
                 <div>
                   <strong>{props.name}</strong>
-                </div>
-              )}
-              {props.title && (
-                <div
-                  style={{
-                    borderTop: `2px solid ${props.tintColor || 'gray'}`,
-                    paddingTop: 3,
-                    marginTop: 3,
-                  }}
-                >
-                  {props.title}
+                  {props.title && (
+                    <span style={{ color: props.tintColor || 'gray', paddingLeft: 10 }}>
+                      {props.title}
+                    </span>
+                  )}
                 </div>
               )}
 
@@ -436,9 +397,13 @@ const Templates = [
               {props.name && (
                 <div>
                   <strong>{props.name}</strong>
+                  {props.title && (
+                    <span style={{ color: props.tintColor || 'gray', paddingLeft: 10 }}>
+                      {props.title}
+                    </span>
+                  )}
                 </div>
               )}
-              {props.title && <div>{props.title}</div>}
             </td>
           </tr>
           <tr>
@@ -478,15 +443,6 @@ const Templates = [
                       &nbsp;(Fax)
                     </span>
                   )}
-                  {props.facebookURL && (
-                    <a
-                      href={props.facebookURL}
-                      title="Facebook"
-                      style={{ marginRight: 8, color: props.tintColor }}
-                    >
-                      {FB_SHARE}
-                    </a>
-                  )}
                   {props.mediumURL && (
                     <a
                       href={props.mediumURL}
@@ -496,24 +452,6 @@ const Templates = [
                       {MEDIUM_SHARE}
                     </a>
                   )}
-                  {props.githubURL && (
-                    <a
-                      href={props.githubURL}
-                      title="Github"
-                      style={{ marginRight: 8, color: props.tintColor }}
-                    >
-                      {GITHUB_SHARE}
-                    </a>
-                  )}
-                  {props.youtubeURL && (
-                    <a
-                      href={props.youtubeURL}
-                      title="YouTube"
-                      style={{ marginRight: 8, color: props.tintColor }}
-                    >
-                      {YOUTUBE_SHARE}
-                    </a>
-                  )}
                   {props.linkedinURL && (
                     <a
                       href={props.linkedinURL}
@@ -521,15 +459,6 @@ const Templates = [
                       style={{ marginRight: 8, color: props.tintColor }}
                     >
                       {LINKEDIN_SHARE}
-                    </a>
-                  )}
-                  {props.twitterHandle && (
-                    <a
-                      href={`https://twitter.com/${props.twitterHandle}`}
-                      title="Twitter"
-                      style={{ marginRight: 8, color: props.tintColor }}
-                    >
-                      {TWITTER_SHARE}
                     </a>
                   )}
                 </div>

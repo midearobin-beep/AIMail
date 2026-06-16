@@ -34,32 +34,12 @@ export const DataShape = [
     label: localized('Website'),
   },
   {
-    key: 'facebookURL',
-    label: localized('Facebook URL'),
-  },
-  {
     key: 'linkedinURL',
     label: localized('LinkedIn URL'),
   },
   {
     key: 'mediumURL',
     label: localized('Medium Handle'),
-  },
-  {
-    key: 'githubURL',
-    label: localized('GitHub Username'),
-  },
-  {
-    key: 'youtubeURL',
-    label: localized('YouTube'),
-  },
-  {
-    key: 'twitterHandle',
-    label: localized('Twitter Handle'),
-  },
-  {
-    key: 'instagramURL',
-    label: localized('Instagram URL'),
   },
   {
     key: 'tintColor',
@@ -71,7 +51,7 @@ export const DataShape = [
 export const ResolveSignatureData = (data: Record<string, string>) => {
   data = { ...data };
 
-  ['websiteURL', 'facebookURL', 'youtubeURL'].forEach((key) => {
+  ['websiteURL'].forEach((key) => {
     if (data[key] && !data[key].includes(':')) {
       data[key] = `http://${data[key]}`;
     }
@@ -94,25 +74,6 @@ export const ResolveSignatureData = (data: Record<string, string>) => {
     }
   }
 
-  // sanitize github username
-  if (data.githubURL) {
-    if (!data.githubURL.includes('github.com')) {
-      data.githubURL = `https://www.github.com/${data.githubURL}`;
-    }
-  }
-  // sanitize twitter handle
-  if (data.twitterHandle) {
-    if (data.twitterHandle.includes('/')) {
-      // a url was likely entered, lets grab the user (last portion).
-      const split = data.twitterHandle.split('/');
-      data.twitterHandle = split[split.length - 1];
-    }
-    if (data.twitterHandle[0] === '@') {
-      // an at symbol was added, lets remove it.
-      data.twitterHandle = data.twitterHandle.slice(1);
-    }
-  }
-
   if (data.photoURL === 'gravatar') {
     const hash = crypto
       .createHash('sha256')
@@ -130,12 +91,6 @@ export const ResolveSignatureData = (data: Record<string, string>) => {
 
   if (data.photoURL === 'custom') {
     data.photoURL = '';
-  }
-
-  if (data.instagramURL) {
-    if (!data.instagramURL.includes('instagram.com')) {
-      data.instagramURL = `https://www.instagram.com/${data.instagramURL}`;
-    }
   }
 
   return data;
