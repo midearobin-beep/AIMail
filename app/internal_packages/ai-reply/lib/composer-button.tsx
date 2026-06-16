@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { Editor } from 'slate';
 import { Message, DraftEditingSession, localized, DatabaseStore } from 'mailspring-exports';
-import { RetinaImg, Spinner } from 'mailspring-component-kit';
+import { RetinaImg, Spinner, ComposerSupport } from 'mailspring-component-kit';
 import { generateReply, replyTextToHtml } from './ai-service';
 
 declare const AppEnv: any;
@@ -98,15 +99,18 @@ const AIReplyComposerButtonInner: React.FC<Props> = ({ draft, session }) => {
         const insertion = findInsertionPoint(currentBody);
 
         const newBody = `${replyHtml}<br><br>${currentBody.substr(insertion)}`;
+        const { Conversion } = ComposerSupport;
+        const inHTMLEditorValue = Conversion.convertFromHTML(newBody);
+        const tempEditor = new Editor({ value: inHTMLEditorValue });
+        tempEditor.moveToStartOfDocument().focus();
+        const focusedValue = tempEditor.value;
+
         if (editor) {
           editor.deselect().blur();
         }
-        session.changes.add({ body: newBody });
-        if (editor) {
-          window.requestAnimationFrame(() => {
-            editor.moveToStartOfDocument().focus();
-          });
-        }
+        setTimeout(() => {
+          session.changes.add({ bodyEditorState: focusedValue });
+        }, 20);
       }
     } catch (err: any) {
       AppEnv.showErrorDialog({
