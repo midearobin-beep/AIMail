@@ -64,6 +64,29 @@ class ThreadSearchBar extends Component<ThreadSearchBarProps, ThreadSearchBarSta
     }
   }
 
+  componentWillUnmount() {
+    window.removeEventListener('mousedown', this._onDocumentMouseDown, true);
+    window.removeEventListener('blur', this._onWindowBlur);
+  }
+
+  _onDocumentMouseDown = (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (
+      this._fieldEl &&
+      target &&
+      typeof target.closest === 'function' &&
+      !target.closest('.thread-search-bar')
+    ) {
+      this._fieldEl.blur();
+    }
+  };
+
+  _onWindowBlur = () => {
+    if (this._fieldEl) {
+      this._fieldEl.blur();
+    }
+  };
+
   _initialQueryForPerspective() {
     const { perspective } = this.props;
 
@@ -176,6 +199,8 @@ class ThreadSearchBar extends Component<ThreadSearchBarProps, ThreadSearchBarSta
 
   _onFocus = (e: React.FocusEvent) => {
     this.setState({ focused: true });
+    window.addEventListener('mousedown', this._onDocumentMouseDown, true);
+    window.addEventListener('blur', this._onWindowBlur);
     if (this.props.query === '') {
       this._onSearchQueryChanged(this._initialQueryForPerspective());
       window.requestAnimationFrame(() => this._fieldEl.focus());
@@ -184,6 +209,8 @@ class ThreadSearchBar extends Component<ThreadSearchBarProps, ThreadSearchBarSta
 
   _onBlur = (e: React.FocusEvent) => {
     this.setState({ focused: false });
+    window.removeEventListener('mousedown', this._onDocumentMouseDown, true);
+    window.removeEventListener('blur', this._onWindowBlur);
     if (this.props.query === this._initialQueryForPerspective()) {
       this._onSearchQueryChanged('');
     }
@@ -291,9 +318,8 @@ class ThreadSearchBar extends Component<ThreadSearchBarProps, ThreadSearchBarSta
   _onClearSearchQuery = (e?: React.MouseEvent | React.KeyboardEvent) => {
     if (this.props.query !== '') {
       Actions.searchQuerySubmitted('');
-    } else {
-      this._fieldEl.blur();
     }
+    this._fieldEl.blur();
     if (e) {
       e.stopPropagation();
       e.preventDefault();
@@ -324,7 +350,7 @@ class ThreadSearchBar extends Component<ThreadSearchBarProps, ThreadSearchBarSta
 
     return (
       <KeyCommandsRegion
-        className={`thread-search-bar ${showPlaceholder ? 'placeholder' : ''}`}
+        className={`thread-search-bar ${showPlaceholder ? 'placeholder' : ''} ${this.state.focused ? 'focused' : ''}`}
         role="combobox"
         aria-expanded={suggestionsVisible}
         aria-haspopup="listbox"

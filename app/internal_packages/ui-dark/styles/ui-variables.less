@@ -96,6 +96,27 @@ img.content-light {
 }
 .sheet-toolbar-container {
   background: @panel-background-color;
+
+  [data-column] {
+    height: 100%;
+    box-sizing: border-box;
+  }
+
+  .toolbar-RootSidebar {
+    background: @source-list-bg;
+    border-bottom: none;
+  }
+
+  .toolbar-ThreadList {
+    background: @list-bg;
+    border-bottom: 1px solid @border-color-divider;
+  }
+
+  .toolbar-MessageList,
+  .toolbar-MessageListSidebar {
+    background: @background-primary;
+    border-bottom: 1px solid @border-color-divider;
+  }
 }
 body.is-blurred .sheet-toolbar-container {
   background: #000;

@@ -24,6 +24,10 @@ mailspring-workspace {
   position: relative;
   font-family: @font-family;
 
+  // Custom layout properties to force Apple Mail style multi-line layout
+  --thread-list-narrow-style-width: 2500px;
+  --thread-list-item-height-narrow: 88px;
+
   // Important: This attribute is used in the theme-manager-specs to check that
   // themes load and override each other correctly. Do not remove!
   background-color: @background-primary;
@@ -159,12 +163,33 @@ body.is-blurred {
   background-color: @toolbar-background-color;
   background-image: none;
   color: @text-color-heading;
+
+  [data-column] {
+    height: 100%;
+    box-sizing: border-box;
+  }
+
+  .toolbar-RootSidebar {
+    background: @source-list-bg;
+    border-bottom: none;
+  }
+
+  .toolbar-ThreadList {
+    background: @list-bg;
+    border-bottom: 1px solid @border-color-divider;
+  }
+
+  .toolbar-MessageList,
+  .toolbar-MessageListSidebar {
+    background: @background-primary;
+    border-bottom: 1px solid @border-color-divider;
+  }
 }
 
 .sheet-toolbar {
   position: relative;
   -webkit-app-region: drag;
-  border-bottom: 1px solid darken(@toolbar-background-color, 3%);
+  border-bottom: none;
   width: 100%;
   height: 34px;
 
@@ -238,14 +263,26 @@ body.is-blurred {
     flex-shrink: 0;
     line-height: 1.75em;
     height: 1.75em;
-    box-shadow: 0 0.5px 0.05px rgba(0, 0, 0, 0.4), 0 -0.5px 0 rgba(0, 0, 0, 0.12);
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: @border-radius-base;
+    transition: background 0.15s ease;
+
     img.content-mask {
       background-color: fade(@text-color-heading, 80%);
     }
-  }
-  .btn-toolbar:active {
-    img.content-mask {
-      background-color: fade(@text-color-heading, 90%);
+
+    &:hover {
+      background: fade(@text-color-heading, 6%);
+      box-shadow: none;
+      border: none;
+    }
+
+    &:active, &.active {
+      background: fade(@text-color-heading, 12%);
+      box-shadow: none;
+      border: none;
     }
   }
   .btn-toolbar:only-of-type {
@@ -259,21 +296,15 @@ body.is-blurred {
       margin-left: 0;
       margin-right: 0;
 
-      // Using these (slower) selectors to avoid redeclaring any constants
-      // like default-case border radius that themes might be overriding.
       &:not(:last-child) {
         border-right: 0;
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-      }
-      &:not(:first-child) {
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
       }
       &:last-child {
         border-left: 0;
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
+      }
+
+      &:hover, &:active, &.active {
+        border-radius: @border-radius-base;
       }
     }
   }

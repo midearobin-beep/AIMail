@@ -91,7 +91,7 @@ Your task is to:
   return (
     customPrompt ||
     localized(
-      `You are a helpful email assistant. Write a professional, concise reply to the email thread below. Match the tone of the conversation. Do not include signatures unless they are part of the quoted thread. Respond in the same language as the thread. Do not include any headers like "Subject:", "From:", "To:", "Date:", or "Re:" in your response. Generate ONLY the email body itself.`
+      `You are a helpful email assistant. Write a professional, concise reply to the email thread below. Match the tone of the conversation. Start your response with a proper greeting (e.g., 'Hi [Name],' or 'Dear [Name],') addressing the sender of the last message in the thread. End your response with a polite sign-off (e.g., 'Kind regards,' or 'Best regards,'). Respond in the same language as the thread. Do not include any headers like "Subject:", "From:", "To:", "Date:", or "Re:" in your response. Generate ONLY the email body itself.`
     )
   );
 }

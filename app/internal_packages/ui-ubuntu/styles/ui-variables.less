@@ -34,6 +34,21 @@
       .toolbar-activity .activity-toolbar-icon {
         background: @light;
       }
+
+      [data-column] {
+        height: 100%;
+        box-sizing: border-box;
+      }
+
+      .toolbar-RootSidebar {
+        border-bottom: none;
+      }
+
+      .toolbar-ThreadList,
+      .toolbar-MessageList,
+      .toolbar-MessageListSidebar {
+        border-bottom: 1px solid darken(@toolbar-background-color, 8%);
+      }
     }
   }
 

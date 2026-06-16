@@ -98,7 +98,15 @@ const AIReplyComposerButtonInner: React.FC<Props> = ({ draft, session }) => {
         const insertion = findInsertionPoint(currentBody);
 
         const newBody = `${replyHtml}<br><br>${currentBody.substr(insertion)}`;
+        if (editor) {
+          editor.deselect().blur();
+        }
         session.changes.add({ body: newBody });
+        if (editor) {
+          window.requestAnimationFrame(() => {
+            editor.moveToStartOfDocument().focus();
+          });
+        }
       }
     } catch (err: any) {
       AppEnv.showErrorDialog({

@@ -434,12 +434,63 @@ body.platform-win32 {
 }
 
 .thread-list-narrow {
+  .list-item {
+    margin: 2px 8px;
+    height: 84px !important; // Fits 88px virtual row height (with 4px vertical margin)
+    padding: 8px 12px;
+    box-sizing: border-box;
+    border-radius: 6px;
+    border-bottom: none !important;
+    background-color: transparent;
+    transition: background-color 100ms ease;
+
+    &:hover {
+      background-color: fade(@text-color, 3%);
+    }
+
+    &.selected,
+    &.focused {
+      background-color: @list-focused-bg;
+      color: @list-focused-color;
+      .inverseContent;
+
+      &:hover {
+        background-color: @list-focused-bg;
+      }
+
+      .timestamp {
+        color: fade(@text-color-inverse, 70%);
+      }
+      .snippet {
+        color: fade(@text-color-inverse, 75%);
+      }
+
+      body.is-blurred & {
+        background-color: fade(@text-color, 8%);
+        color: @text-color;
+
+        .timestamp {
+          color: fade(@text-color, 50%);
+        }
+        .snippet {
+          color: fade(@text-color, 55%);
+        }
+        .thread-icon,
+        .draft-icon,
+        .mail-important-icon {
+          filter: none; // Disable white filter when blurred selection is grey
+        }
+      }
+    }
+  }
+
   .icons-column {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 25px;
-    margin-right: 5px;
+    width: 20px;
+    margin-right: 8px;
+    padding-top: 2px;
 
     .thread-injected-icons {
       align-items: center;
@@ -447,27 +498,34 @@ body.platform-win32 {
   }
   .thread-info-column {
     flex: 1;
-    align-self: center;
+    align-self: flex-start;
     overflow: hidden;
 
     .participants-wrapper {
       display: flex;
-      align-items: center;
-      min-height: 24px;
+      align-items: baseline;
+      min-height: 18px;
+      margin-bottom: 2px;
     }
   }
   .list-column {
     display: block;
   }
   .list-tabular-item {
-    line-height: 21px;
+    line-height: normal;
   }
   .timestamp {
     order: 100;
     min-width: 0;
+    font-size: 11px;
+    font-weight: 400;
+    color: fade(@text-color, 50%);
   }
   .participants {
-    font-size: @font-size-base;
+    font-size: 13px;
+    font-weight: 600;
+    color: @text-color;
+    line-height: 18px;
   }
 
   .mail-important-icon {
@@ -478,16 +536,20 @@ body.platform-win32 {
   }
 
   .subject {
-    font-size: @font-size-base;
+    font-size: 12px;
+    font-weight: 400;
+    color: @text-color;
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: left;
     margin-right: @scrollbar-margin;
+    margin-bottom: 2px;
+    line-height: 16px;
   }
   .snippet-and-labels {
     margin-right: @scrollbar-margin;
     display: flex;
-    align-items: baseline;
+    align-items: flex-start;
     overflow: hidden;
 
     .mail-label {
@@ -496,13 +558,17 @@ body.platform-win32 {
     }
 
     .snippet {
-      font-size: @font-size-small;
+      font-size: 11.5px;
+      line-height: 15px;
+      color: fade(@text-color, 50%);
       overflow: hidden;
       text-overflow: ellipsis;
-      opacity: 0.7;
       text-align: left;
-      min-height: 21px;
       margin-right: 4px;
+      white-space: normal; // Allow wrapping
+      display: -webkit-box;
+      -webkit-line-clamp: 2; // Allow 2 lines of snippet preview like Apple Mail
+      -webkit-box-orient: vertical;
     }
   }
 }
