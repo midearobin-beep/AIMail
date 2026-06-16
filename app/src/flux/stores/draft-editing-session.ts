@@ -99,7 +99,7 @@ function hotwireDraftBodyState(draft: any, session: DraftEditingSession): Messag
           }
 
           // Note: We must re-focus the body or the composer is blurred after this operation
-          edits = edits.moveToStart().focus();
+          edits = edits.moveToStartOfDocument().focus();
 
           _bodyEditorValue = edits.value;
         } catch (err) {
