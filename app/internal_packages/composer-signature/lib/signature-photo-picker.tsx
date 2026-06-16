@@ -178,7 +178,13 @@ export default class SignaturePhotoPicker extends React.Component<
                 }
                 shouldAcceptDrop={(e) => (e as any).dataTransfer.types.includes('Files')}
                 style={{
-                  backgroundImage: !isUploading && `url(${resolvedURL || emptyPlaceholderURL})`,
+                  backgroundImage:
+                    !isUploading &&
+                    `url(${
+                      resolvedURL && resolvedURL.startsWith('data:')
+                        ? resolvedURL.split('?')[0]
+                        : resolvedURL || emptyPlaceholderURL
+                    })`,
                 }}
                 className={`photo-well ${isDropping && 'dropping'}`}
               >

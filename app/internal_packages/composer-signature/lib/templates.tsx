@@ -87,6 +87,14 @@ function widthAndHeightForPhotoURL(
     height: Math.round(q.msh * scale),
   };
 }
+
+function cleanPhotoURL(photoURL: string) {
+  if (!photoURL) return '';
+  if (photoURL.startsWith('data:')) {
+    return photoURL.split('?')[0];
+  }
+  return photoURL;
+}
 // Generic components used across templates
 
 const PrefixStyles = {
@@ -197,7 +205,7 @@ const Templates = [
                 <img
                   alt=""
                   key={props.photoURL}
-                  src={props.photoURL}
+                  src={cleanPhotoURL(props.photoURL)}
                   {...widthAndHeightForPhotoURL(props.photoURL, { maxWidth: 60, maxHeight: 60 })}
                   style={{ maxWidth: 60, maxHeight: 60, marginRight: 10 }}
                 />
@@ -260,7 +268,7 @@ const Templates = [
                   <img
                     alt=""
                     key={props.photoURL}
-                    src={props.photoURL}
+                    src={cleanPhotoURL(props.photoURL)}
                     {...widthAndHeightForPhotoURL(props.photoURL, { maxWidth: 200, maxHeight: 60 })}
                     style={{ maxWidth: 200, maxHeight: 60 }}
                   />
@@ -296,7 +304,7 @@ const Templates = [
                 <img
                   alt=""
                   key={props.photoURL}
-                  src={props.photoURL}
+                  src={cleanPhotoURL(props.photoURL)}
                   {...widthAndHeightForPhotoURL(props.photoURL, { maxWidth: 200, maxHeight: 130 })}
                   style={{ maxWidth: 200, maxHeight: 130, marginRight: 20 }}
                 />
@@ -353,7 +361,7 @@ const Templates = [
                 <img
                   alt=""
                   key={props.photoURL}
-                  src={props.photoURL}
+                  src={cleanPhotoURL(props.photoURL)}
                   {...widthAndHeightForPhotoURL(props.photoURL, { maxWidth: 200, maxHeight: 130 })}
                   style={{ maxWidth: 200, maxHeight: 130, marginTop: 12, marginBottom: 12 }}
                 />
@@ -387,7 +395,7 @@ const Templates = [
                 <img
                   alt=""
                   key={props.photoURL}
-                  src={props.photoURL}
+                  src={cleanPhotoURL(props.photoURL)}
                   {...widthAndHeightForPhotoURL(props.photoURL, { maxWidth: 60, maxHeight: 60 })}
                   style={{ maxWidth: 60, maxHeight: 60, marginRight: 10 }}
                 />

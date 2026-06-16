@@ -11,7 +11,7 @@ export const DataShape = [
   },
   {
     key: 'title',
-    label: localized('Title'),
+    label: localized('Job Title'),
   },
   {
     key: 'phone',
