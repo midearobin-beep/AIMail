@@ -1,14 +1,26 @@
 import { MutableQuerySubscription } from './mutable-query-subscription';
 import DatabaseStore from '../stores/database-store';
 import RecentlyReadStore from '../stores/recently-read-store';
+import CategoryStore from '../stores/category-store';
 import { Matcher } from '../attributes/matcher';
 import { Thread } from '../models/thread';
 import { Model } from '../models/model';
 import ModelQuery from './query';
 
 const buildQuery = (categoryIds: string[]) => {
+  const accountIds = Array.from(
+    new Set(
+      categoryIds
+        .map((id) => {
+          const cat = CategoryStore.categories().find((c) => c.id === id);
+          return cat ? cat.accountId : null;
+        })
+        .filter(Boolean)
+    )
+  );
+
   const unreadMatchers = new Matcher.And([
-    Thread.attributes.categories.containsAny(categoryIds),
+    Thread.attributes.accountId.in(accountIds),
     Thread.attributes.unread.equal(true),
     Thread.attributes.inAllMail.equal(true),
   ]);
