@@ -50,7 +50,9 @@ jobs:
           APPLE_PROVISIONING_PROFILE_B64: ${{ secrets.APPLE_PROVISIONING_PROFILE_B64 }}
 
       - name: Setup AWS CLI
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
         uses: aws-actions/configure-aws-credentials@v1
+        continue-on-error: true
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -77,7 +79,15 @@ jobs:
           mv app/dist/Mailspring.zip app/dist/Mailspring-AppleSilicon.zip
 
       - name: Sync artifacts to S3 bucket
+        continue-on-error: true
         run: |
           aws s3 sync app/dist/ "s3://mailspring-builds/client/$(git rev-parse --short=8 HEAD)/osx" \
             --acl public-read \
             --exclude "*" --include *.zip
+
+      - name: Upload macOS Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: aimail-macos-${{ matrix.arch }}
+          path: |
+            app/dist/*.zip
