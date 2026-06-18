@@ -109,8 +109,11 @@ export function replyTextToHtml(text: string): string {
   return text
     .split('\n')
     .map((line) => {
+      if (!line) {
+        return '<br>';
+      }
       const escaped = escapeHtml(line).replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
-      return `<div>${escaped || '<br>'}</div>`;
+      return `<div>${escaped}</div>`;
     })
     .join('');
 }

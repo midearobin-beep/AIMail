@@ -97,7 +97,7 @@ const AIReplyComposerButtonInner: React.FC<Props> = ({ draft, session }) => {
         const currentBody = draft.body || '';
         const insertion = findInsertionPoint(currentBody);
 
-        const newBody = `${replyHtml}<div><br></div><div><br></div>${currentBody.substr(insertion)}`;
+        const newBody = `${replyHtml}<br><br>${currentBody.substr(insertion)}`;
         if (editor) {
           editor.deselect().blur();
         }
