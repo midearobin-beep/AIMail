@@ -67,7 +67,7 @@ export const BLOCK_CONFIG: {
 } = {
   div: {
     type: 'div',
-    tagNames: ['div', 'br', 'p'],
+    tagNames: ['div', 'p'],
     render: ({ node, attributes, children, targetIsHTML }) => {
       let explicitHTMLAttributes = undefined;
 

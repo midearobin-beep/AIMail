@@ -1,31 +1,14 @@
 import React, { useState } from 'react';
-import { Message, DraftEditingSession, localized, DatabaseStore } from 'mailspring-exports';
+import { Message, DraftEditingSession, localized, DatabaseStore, Actions } from 'mailspring-exports';
 import { RetinaImg, Spinner } from 'mailspring-component-kit';
-import { generateReply, replyTextToHtml } from './ai-service';
+import { generateReply } from './ai-service';
+import AIReplyModal from './ai-reply-modal';
 
 declare const AppEnv: any;
 
 type Props = { draft: Message; session: DraftEditingSession };
 
-const QUOTE_MARKERS = [
-  '<signature',
-  '<div class="gmail_quote_attribution"',
-  '<blockquote class="gmail_quote"',
-  '<div class="gmail_quote"',
-  '<div class="msg-quoted-content"',
-  '<hr',
-];
-
-function findInsertionPoint(body: string): number {
-  let insertion = body.length;
-  for (const marker of QUOTE_MARKERS) {
-    const idx = body.toLowerCase().indexOf(marker.toLowerCase());
-    if (idx !== -1 && idx < insertion) {
-      insertion = idx;
-    }
-  }
-  return insertion;
-}
+// Removed QUOTE_MARKERS and findInsertionPoint since we're using a modal
 
 async function fetchThreadMessages(threadId: string): Promise<Message[]> {
   const { Message: MessageModel } = await import('mailspring-exports');
@@ -69,22 +52,22 @@ const AIReplyComposerButtonInner: React.FC<Props> = ({ draft, session }) => {
         throw new Error(localized('No messages found in this thread.'));
       }
 
-      const myEmail = draft.from[0]?.email;
-      const config = AppEnv.config;
-      const provider = config.get('core.aiReply.provider') || 'openai';
-      const model = config.get('core.aiReply.model');
-      const customEndpoint = config.get('core.aiReply.customEndpoint');
-      const customPrompt = config.get('core.aiReply.customPrompt');
-
-      const replyText = await generateReply(messages, myEmail, {
-        provider,
-        model,
-        customEndpoint,
-        customPrompt,
-        selectedText: isSelectionMode ? selectedText : undefined,
-      });
-
       if (isSelectionMode) {
+        setIsLoading(true);
+        const config = AppEnv.config;
+        const provider = config.get('core.aiReply.provider') || 'openai';
+        const model = config.get('core.aiReply.model');
+        const customEndpoint = config.get('core.aiReply.customEndpoint');
+        const customPrompt = config.get('core.aiReply.customPrompt');
+
+        const replyText = await generateReply(messages, draft.from[0]?.email, {
+          provider,
+          model,
+          customEndpoint,
+          customPrompt,
+          selectedText,
+        });
+
         if (editor && originalSelection) {
           editor.select(originalSelection);
         }
@@ -93,22 +76,12 @@ const AIReplyComposerButtonInner: React.FC<Props> = ({ draft, session }) => {
           editor.focus();
         }
       } else {
-        const replyHtml = replyTextToHtml(replyText);
-        const currentBody = draft.body || '';
-        const insertion = findInsertionPoint(currentBody);
-
-        const newBody = `${replyHtml}<br><br>${currentBody.substr(insertion)}`;
-        if (editor) {
-          editor.deselect().blur();
-        }
-        setTimeout(() => {
-          session.changes.add({ body: newBody });
-          if (editor) {
-            window.requestAnimationFrame(() => {
-              editor.moveToStartOfDocument().focus();
-            });
-          }
-        }, 20);
+        // Full reply generation: show the iterative modal instead of injecting directly into Slate
+        Actions.openModal({
+          component: <AIReplyModal messages={messages} myEmail={draft.from[0]?.email} />,
+          width: 700,
+          height: 500,
+        });
       }
     } catch (err: any) {
       AppEnv.showErrorDialog({

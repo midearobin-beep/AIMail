@@ -30,6 +30,7 @@ interface GenerateOptions {
   customEndpoint?: string;
   customPrompt?: string;
   selectedText?: string;
+  onProgress?: (chunk: string, fullText: string) => void;
 }
 
 const AI_PROVIDERS: Record<string, AIProviderConfig> = {
@@ -110,7 +111,7 @@ export function replyTextToHtml(text: string): string {
     .split('\n')
     .map((line) => {
       if (!line) {
-        return '<br>';
+        return '<div><br></div>';
       }
       const escaped = escapeHtml(line).replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
       return `<div>${escaped}</div>`;
@@ -197,26 +198,71 @@ export async function generateReply(
     }
   }
 
-  const body = providerConfig.formatBody(threadMessages, selectedModel, systemPrompt);
-  const headers = providerConfig.headers(apiKey);
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 60000);
-
-  try {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body),
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(localized('AI API error %@: %@', response.status, errorText));
+    const body: any = providerConfig.formatBody(threadMessages, selectedModel, systemPrompt);
+    if (options.onProgress) {
+      body.stream = true;
     }
+    const headers = providerConfig.headers(apiKey);
+  
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+  
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+  
+      clearTimeout(timeoutId);
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(localized('AI API error %@: %@', response.status, errorText));
+      }
+  
+      if (options.onProgress && response.body) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let fullText = '';
+        let done = false;
+        let buffer = '';
+  
+        while (!done) {
+          const { value, done: readerDone } = await reader.read();
+          done = readerDone;
+          if (value) {
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
+            for (const line of lines) {
+              const trimmedLine = line.trim();
+              if (trimmedLine.startsWith('data: ')) {
+                const data = trimmedLine.slice(6);
+                if (data === '[DONE]') {
+                  done = true;
+                  break;
+                }
+                try {
+                  const json = JSON.parse(data);
+                  const chunk = json.choices?.[0]?.delta?.content;
+                  if (chunk) {
+                    fullText += chunk;
+                    options.onProgress(chunk, fullText);
+                  }
+                } catch (e) {
+                  // Ignore parsing errors
+                }
+              }
+            }
+          }
+        }
+        return fullText
+          .replace(/^(?:Subject|From|To|Date|Re)\s*:[^\n]*\n?/gim, '')
+          .replace(/^(?:Re)\s*:[^\n]*\n?/gim, '')
+          .trim();
+      }
 
     const json = await response.json();
     const replyText = providerConfig.extractResponse(json);

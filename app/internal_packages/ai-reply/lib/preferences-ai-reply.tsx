@@ -88,6 +88,20 @@ const PreferencesAIReply: React.FC<Props> = ({ config }) => {
         </div>
 
         <div className="item">
+          <label>{localized('Reply Mode:')}</label>
+          <select
+            value={config.get('core.aiReply.mode') || 'auto'}
+            onChange={(e) => config.set('core.aiReply.mode', e.target.value)}
+          >
+            <option value="auto">{localized('Direct Reply (直接回复)')}</option>
+            <option value="guided">{localized('Guided Reply (引导式回复)')}</option>
+          </select>
+          <div className="note" style={{marginTop: '4px'}}>
+            {localized('Guided mode first analyzes the thread and asks questions. You answer them, then generate the final draft.')}
+          </div>
+        </div>
+
+        <div className="item">
           <label>{localized('API Key:')}</label>
           <div className="row">
             <input

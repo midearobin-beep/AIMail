@@ -140,13 +140,15 @@ body.is-blurred {
     }
   }
   .sheet-toolbar-container {
-    background-color: lighten(@toolbar-background-color, 14%);
+    background-color: lighten(@toolbar-background-color, 5%);
+    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
     background-image: none;
 
     .btn.btn-toolbar {
       background: none;
-      box-shadow: 0 0.5px 0 @btn-border-color, 0 -0.5px 0 @btn-border-color,
-        0.5px 0 0 @btn-border-color, -0.5px 0 0 @btn-border-color;
+      box-shadow: none;
+      border: none;
       img {
         opacity: 0.5;
       }
@@ -161,6 +163,8 @@ body.is-blurred {
 
 .sheet-toolbar-container {
   background-color: @toolbar-background-color;
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
   background-image: none;
   color: @text-color-heading;
 
@@ -170,19 +174,19 @@ body.is-blurred {
   }
 
   .toolbar-RootSidebar {
-    background: @source-list-bg;
+    background: transparent; /* Rely on container's glass effect */
     border-bottom: none;
   }
 
   .toolbar-ThreadList {
-    background: @list-bg;
-    border-bottom: 1px solid @border-color-divider;
+    background: transparent;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05); /* Softer divider */
   }
 
   .toolbar-MessageList,
   .toolbar-MessageListSidebar {
-    background: @background-primary;
-    border-bottom: 1px solid @border-color-divider;
+    background: transparent;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   }
 }
 
@@ -231,22 +235,42 @@ body.is-blurred {
 
   .item-back {
     order: -999;
-    img.content-mask {
-      background-color: @text-color-heading;
-    }
     flex-grow: 0;
     flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 12px;
+    height: 28px;
+    margin: 3px 0 0 10px;
+    border-radius: 20px;
+    cursor: default;
+    transition: all 0.2s ease;
+    background: transparent;
+
+    img.content-mask {
+      background-color: @text-color-heading;
+      margin-right: 4px;
+      width: 14px;
+      height: 14px;
+    }
 
     .item-back-title {
-      cursor: default;
       color: @text-color-heading;
       margin: 0;
-      font-size: @font-size-h4;
-      font-weight: @font-weight-normal;
-      vertical-align: middle;
+      font-size: 13px;
+      font-weight: 500;
       display: inline-block;
+      line-height: 28px;
     }
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
     &:active {
+      background: rgba(0, 0, 0, 0.1);
+      transform: scale(0.96);
+      
       .item-back-title {
         color: mix(@text-color-heading, @black, 30%);
       }

@@ -16,7 +16,7 @@ body.platform-win32 {
     .windows-btn-border;
 
     &.btn-action {
-      border: 2px solid darken(@btn-action-bg-color, 10%);
+      border: 1px solid darken(@btn-action-bg-color, 5%);
       &:hover {
         background: @btn-action-bg-color;
       }
@@ -25,16 +25,9 @@ body.platform-win32 {
     &.btn-emphasis {
       background: @btn-emphasis-bg-color;
       border: 0;
-
       &:hover {
-        border-radius: 0;
-        background: darken(@btn-emphasis-bg-color, 10%);
+        background: darken(@btn-emphasis-bg-color, 5%);
       }
-    }
-
-    &.btn-emphasis:active {
-      background: @btn-emphasis-bg-color;
-      box-shadow: 0 0 0;
     }
 
     &.btn-danger,
@@ -42,158 +35,177 @@ body.platform-win32 {
       background: @btn-danger-bg-color;
       border: 0;
       &:hover {
-        border-radius: 0;
-        background: darken(@btn-danger-bg-color, 10%);
+        background: darken(@btn-danger-bg-color, 5%);
       }
     }
   }
 }
 
+/* macOS 26.5 Modern Liquid / Flat Buttons */
 .btn {
-  padding: 0 0.8em;
-  border-radius: @border-radius-base;
-  border: 0;
+  padding: 0 14px;
+  border-radius: 20px; /* Pill shape */
+  border: 1px solid rgba(0, 0, 0, 0.08); /* Subtle border instead of weird shadows */
   cursor: default;
   display: inline-block;
-  color: @btn-default-text-color;
-  background: @background-primary;
+  color: @text-color;
+  background: rgba(255, 255, 255, 0.75); /* Translucent modern background */
+  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+  height: 28px;
+  line-height: 26px; /* Adjust for border */
+  font-size: 13px;
+  font-weight: 500;
 
   img.content-mask {
     background-color: @btn-default-text-color;
   }
 
-  // Use 4 box shadows to create a 0.5px hairline around the button, and another
-  // for the actual shadow. Pending https://code.google.com/p/chromium/issues/detail?id=236371
-  // Yes, 1px border looks really bad on retina.
-  box-shadow: 0 0.5px 0 @btn-border-color, 0 -0.5px 0 @btn-border-color,
-    0.5px 0 0 @btn-border-color, -0.5px 0 0 @btn-border-color, 0 0.5px 1px @btn-border-color;
-
-  height: 1.9em;
-  line-height: 1.9em;
-
   .text {
     margin-left: 6px;
   }
 
-  &:active {
-    cursor: default;
-    background: darken(@btn-default-bg-color, 9%);
+  &:hover {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   }
+
+  &:active {
+    background: rgba(0, 0, 0, 0.05);
+    box-shadow: none;
+    transform: scale(0.98);
+  }
+
   &:focus-visible {
     outline: 2px solid @accent-primary;
     outline-offset: 1px;
   }
 
-  font-size: @font-size-small;
-
   &.btn-small {
     font-size: @font-size-smaller;
+    height: 24px;
+    line-height: 22px;
+    padding: 0 10px;
   }
+
   &.btn-large {
     font-size: @font-size-base;
-    padding: 0 1.3em;
-    line-height: 2.2em;
-    height: 2.3em;
+    padding: 0 20px;
+    line-height: 34px;
+    height: 36px;
   }
+
   &.btn-larger {
     font-size: @font-size-large;
-    padding: 0 1.6em;
+    padding: 0 24px;
+    height: 40px;
+    line-height: 38px;
   }
 
   &.btn-action {
     color: @btn-action-text-color;
     background: @btn-action-bg-color;
+    border: none;
+    box-shadow: 0 2px 8px fadeout(@btn-action-bg-color, 70%);
     img.content-mask {
       background-color: @btn-action-text-color;
+    }
+    &:hover {
+      background: lighten(@btn-action-bg-color, 5%);
+      box-shadow: 0 4px 12px fadeout(@btn-action-bg-color, 60%);
     }
   }
 
   &.btn-disabled {
     color: fadeout(@btn-default-text-color, 50%);
-    background: fadeout(@btn-default-bg-color, 25%);
+    background: rgba(0, 0, 0, 0.03);
+    border-color: transparent;
+    box-shadow: none;
     &:active {
-      background: fadeout(@btn-default-bg-color, 25%);
+      transform: none;
     }
   }
 
   &.btn-emphasis {
     position: relative;
-    color: @btn-emphasis-text-color;
-    font-weight: @font-weight-medium;
-
+    color: #ffffff;
+    font-weight: 500;
+    background: #007aff; /* Apple Blue */
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    
     img.content-mask {
-      background-color: @btn-emphasis-text-color;
+      background-color: #ffffff;
     }
 
-    background: linear-gradient(to bottom, #6bb1f9 0%, #0a80ff 100%);
-    box-shadow: none;
-    border: 1px solid darken(@btn-emphasis-bg-color, 7%);
+    &:hover {
+      background: #1a8cff;
+      box-shadow: 0 6px 16px rgba(0, 122, 255, 0.4);
+    }
+
+    &:active {
+      background: #006ce6;
+      box-shadow: 0 2px 6px rgba(0, 122, 255, 0.2);
+      transform: scale(0.98);
+    }
 
     &.btn-disabled {
-      opacity: 0.4;
-    }
-
-    &:before {
-      content: ' ';
-      width: calc(~'100% + 2px');
-      height: calc(~'100% + 2px');
-      border-radius: @border-radius-base + 1;
-      top: -1px;
-      left: -1px;
-      position: absolute;
-      z-index: -1;
-      background: linear-gradient(to bottom, #4ca2f9 0%, #015cff 100%);
-    }
-    &:active {
-      background: -webkit-gradient(
-        linear,
-        left top,
-        left bottom,
-        from(darken(@btn-emphasis-bg-color, 10%)),
-        to(darken(@btn-emphasis-bg-color, 4%))
-      );
+      opacity: 0.5;
+      box-shadow: none;
     }
   }
 
   &.btn-danger,
   .btn-destructive {
-    color: @btn-danger-text-color;
-    background: @btn-danger-bg-color;
+    color: #ffffff;
+    background: #ff3b30;
+    border: none;
+    box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3);
+    
     img.content-mask {
-      background-color: @btn-danger-text-color;
+      background-color: #ffffff;
+    }
+
+    &:hover {
+      background: #ff5147;
+      box-shadow: 0 6px 16px rgba(255, 59, 48, 0.4);
     }
   }
 }
 
 .btn-toolbar {
-  .btn-gradient;
-
+  background: transparent;
   padding: 0 13px;
+  border: none;
+  box-shadow: none;
+  border-radius: 6px; /* Toolbars look better with rounded rects */
+  
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+    box-shadow: none;
+  }
+  
+  &:active {
+    background: rgba(0, 0, 0, 0.1);
+    transform: none;
+  }
+
   &.narrow {
     padding: 0 9px;
   }
   &.btn-disabled {
-    opacity: 0.6;
+    opacity: 0.4;
+    background: transparent;
   }
 }
 
+/* Remove old gradients entirely */
 .btn-gradient {
-  background: -webkit-gradient(
-    linear,
-    left top,
-    left bottom,
-    from(@btn-default-bg-color),
-    to(darken(@btn-default-bg-color, 4.8%))
-  );
+  background: transparent;
 }
 .btn-gradient:active {
-  background: -webkit-gradient(
-    linear,
-    left top,
-    left bottom,
-    from(darken(@btn-default-bg-color, 9%)),
-    to(darken(@btn-default-bg-color, 13.5%))
-  );
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .btn-icon {
@@ -201,6 +213,9 @@ body.platform-win32 {
   border: 0;
   box-shadow: none;
   color: @text-color-subtle;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  
   img.content-mask {
     background-color: @text-color-subtle;
   }
@@ -220,19 +235,19 @@ body.platform-win32 {
 
     &:hover {
       color: white;
+      background: rgba(255, 255, 255, 0.1);
     }
 
     &:active {
       color: @text-color-inverse;
-      img.content-mask {
-        background-color: @text-color-inverse;
-      }
+      background: rgba(255, 255, 255, 0.2);
     }
   }
 
   &:hover {
     cursor: default;
     color: @text-color-link;
+    background: rgba(0, 0, 0, 0.05);
     img.content-mask {
       background-color: @text-color-link;
     }
@@ -240,6 +255,7 @@ body.platform-win32 {
   }
   &:active {
     color: @text-color-link-active;
+    background: rgba(0, 0, 0, 0.1);
     img.content-mask {
       background-color: @text-color-link-active;
     }
