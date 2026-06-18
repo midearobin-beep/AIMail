@@ -106,7 +106,13 @@ function escapeHtml(text: string): string {
 }
 
 export function replyTextToHtml(text: string): string {
-  return escapeHtml(text).replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+  return text
+    .split('\n')
+    .map((line) => {
+      const escaped = escapeHtml(line).replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+      return `<div>${escaped || '<br>'}</div>`;
+    })
+    .join('');
 }
 
 function extractCleanTextFromMessage(message: Message): string {
