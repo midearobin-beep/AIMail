@@ -76,10 +76,43 @@ interface PreferencesTabBarProps {
   };
 }
 
-class PreferencesTabsBar extends React.Component<PreferencesTabBarProps> {
+interface PreferencesTabBarState {
+  indicatorLeft: number;
+  indicatorWidth: number;
+}
+
+class PreferencesTabsBar extends React.Component<PreferencesTabBarProps, PreferencesTabBarState> {
   static displayName = 'PreferencesTabsBar';
 
+  state = { indicatorLeft: 0, indicatorWidth: 0 };
   private _listRef = React.createRef<HTMLDivElement>();
+
+  componentDidMount() {
+    // Wait for initial render to complete before measuring
+    requestAnimationFrame(() => this._updateIndicator());
+    window.addEventListener('resize', this._updateIndicator);
+  }
+
+  componentDidUpdate(prevProps: PreferencesTabBarProps) {
+    if (prevProps.selection.tabId !== this.props.selection.tabId) {
+      this._updateIndicator();
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._updateIndicator);
+  }
+
+  _updateIndicator = () => {
+    if (!this._listRef.current) return;
+    const activeEl = this._listRef.current.querySelector('.item.active') as HTMLElement;
+    if (activeEl) {
+      this.setState({
+        indicatorLeft: activeEl.offsetLeft,
+        indicatorWidth: activeEl.offsetWidth,
+      });
+    }
+  };
 
   _onKeyDown = (e: React.KeyboardEvent) => {
     const { tabs, selection } = this.props;
@@ -122,9 +155,16 @@ class PreferencesTabsBar extends React.Component<PreferencesTabBarProps> {
           aria-label={localized('Preferences tabs')}
           onKeyDown={this._onKeyDown}
         >
-          <div style={{ flex: 0.5 }} />
+          <div
+            className="active-glass-indicator"
+            style={{
+              left: this.state.indicatorLeft,
+              width: this.state.indicatorWidth,
+            }}
+          />
+          <div style={{ flex: 0.5, zIndex: 1 }} />
           {this.renderTabs()}
-          <div style={{ flex: 0.5 }} />
+          <div style={{ flex: 0.5, zIndex: 1 }} />
         </div>
       </div>
     );
