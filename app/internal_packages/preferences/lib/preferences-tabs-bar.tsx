@@ -93,10 +93,8 @@ class PreferencesTabsBar extends React.Component<PreferencesTabBarProps, Prefere
     window.addEventListener('resize', this._updateIndicator);
   }
 
-  componentDidUpdate(prevProps: PreferencesTabBarProps) {
-    if (prevProps.selection.tabId !== this.props.selection.tabId) {
-      this._updateIndicator();
-    }
+  componentDidUpdate() {
+    this._updateIndicator();
   }
 
   componentWillUnmount() {
@@ -107,10 +105,14 @@ class PreferencesTabsBar extends React.Component<PreferencesTabBarProps, Prefere
     if (!this._listRef.current) return;
     const activeEl = this._listRef.current.querySelector('.item.active') as HTMLElement;
     if (activeEl) {
-      this.setState({
-        indicatorLeft: activeEl.offsetLeft,
-        indicatorWidth: activeEl.offsetWidth,
-      });
+      const left = activeEl.offsetLeft;
+      const width = activeEl.offsetWidth;
+      if (left !== this.state.indicatorLeft || width !== this.state.indicatorWidth) {
+        this.setState({
+          indicatorLeft: left,
+          indicatorWidth: width,
+        });
+      }
     }
   };
 
